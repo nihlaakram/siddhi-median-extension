@@ -15,6 +15,7 @@
 */
 package org.wso2.siddhi.extension.median;
 
+import org.apache.log4j.Logger;
 import org.wso2.siddhi.annotation.Example;
 import org.wso2.siddhi.annotation.Extension;
 import org.wso2.siddhi.annotation.Parameter;
@@ -26,7 +27,6 @@ import org.wso2.siddhi.core.executor.ExpressionExecutor;
 import org.wso2.siddhi.core.query.selector.attribute.aggregator.AttributeAggregator;
 import org.wso2.siddhi.core.util.config.ConfigReader;
 import org.wso2.siddhi.query.api.definition.Attribute;
-import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +35,7 @@ import java.util.Map;
 
 @Extension(
         name = "median",
-        namespace = "org.wso2.siddhi.extension.median",
+        namespace = "median",
         description = "TBD",
         parameters = {
                 @Parameter(name = "data",
@@ -48,13 +48,14 @@ import java.util.Map;
                 type = {DataType.INT, DataType.LONG, DataType.DOUBLE}),
         examples = @Example(description = "TBD", syntax = "TBD")
 )
-public class MedianAggregator extends  AttributeAggregator{
+public class MedianAggregator extends AttributeAggregator {
     private MedianAggregator medianAgg;
     Logger log = Logger.getLogger(MedianAggregator.class);
+    private int count = 0;
 
 
-    protected void init (ExpressionExecutor[] expressionExecutors, ConfigReader configReader, ExecutionPlanContext executionPlanContext) {
-    //(ExpressionExecutor[] attributeExpressionExecutors, ExecutionPlanContext executionPlanContext) {
+    protected void init(ExpressionExecutor[] expressionExecutors, ConfigReader configReader, ExecutionPlanContext executionPlanContext) {
+        //(ExpressionExecutor[] attributeExpressionExecutors, ExecutionPlanContext executionPlanContext) {
         if (expressionExecutors.length != 1) {
             throw new OperationNotSupportedException("Median aggregator has to have exactly 1 parameter, currently " +
                     expressionExecutors.length + " parameters provided");
@@ -107,7 +108,6 @@ public class MedianAggregator extends  AttributeAggregator{
     }
 
 
-
     public void start() {
     }
 
@@ -127,7 +127,6 @@ public class MedianAggregator extends  AttributeAggregator{
     private class MedianAggregatorDouble extends MedianAggregator {
         private final Attribute.Type type = Attribute.Type.DOUBLE;
         private ArrayList<Double> arr = new ArrayList<Double>();
-        private int count = 1;
 
 
         public Attribute.Type getReturnType() {
@@ -136,46 +135,34 @@ public class MedianAggregator extends  AttributeAggregator{
 
 
         public Object processAdd(Object data) {
-
-
-            // System.out.print(count+"   ");
-            arr.add((Double)data);
+            arr.add((Double) data);
             count++;
-
             return getMedian(arr);
         }
 
         private double getMedian(ArrayList<Double> test) {
-            ArrayList<Double> arrSorted = new ArrayList<Double>();
-            for(int i =0; i<test.size(); i++){
-                arrSorted.add(test.get(i));
+            Collections.sort(test);
 
+            int pointA = count / 2;
+            if (count % 2 == 0) {
+                int pointB = pointA - 1;
+                return (test.get(pointA) + test.get(pointB)) / 2;
             }
 
-            Collections.sort(arrSorted);
-
-            int pointA = arrSorted.size()/2;
-            if(arrSorted.size()%2==0){
-                int pointB = pointA-1;
-                return (arrSorted.get(pointA)+arrSorted.get(pointB))/2;
-            }
-
-
-            return arrSorted.get(pointA);
+            return test.get(pointA);
         }
 
 
         public Object processRemove(Object data) {
-            arr.remove(0);
+            arr.remove(data);
+            count--;
             return 0.0;
         }
 
 
         public Object reset() {
-            //System.out.println("reset");
-            int len = arr.size();
             arr = new ArrayList<Double>();
-
+            count = 0;
             return 0.0;
         }
 
@@ -198,38 +185,34 @@ public class MedianAggregator extends  AttributeAggregator{
 
 
         public Object processAdd(Object data) {
-
-            arr.add((Float)data);
+            arr.add((Float) data);
+            count++;
             return getMedian(arr);
         }
 
         private float getMedian(ArrayList<Float> test) {
-            ArrayList<Float> arrSorted = new ArrayList<Float>();
-            for(int i =0; i<test.size(); i++){
-                arrSorted.add(test.get(i));
+            Collections.sort(test);
 
-            }
-
-            Collections.sort(arrSorted);
-            ;
-            int pointA = arrSorted.size()/2;
-            if(arrSorted.size()%2==0){
-                int pointB = pointA-1;
-                return (arrSorted.get(pointA)+arrSorted.get(pointB))/2;
+            int pointA = count / 2;
+            if (count % 2 == 0) {
+                int pointB = pointA - 1;
+                return (test.get(pointA) + test.get(pointB)) / 2;
             }
 
 
-            return arrSorted.get(pointA);
+            return test.get(pointA);
         }
 
         public Object processRemove(Object data) {
-            arr.remove(0);
+            arr.remove(data);
+            count--;
             return 0.0;
         }
 
 
         public Object reset() {
             arr = new ArrayList<Float>();
+            count = 0;
             return 0.0;
         }
 
@@ -252,40 +235,35 @@ public class MedianAggregator extends  AttributeAggregator{
         }
 
         public Object processAdd(Object data) {
-
-
-            arr.add((Integer)data);
-
+            arr.add((Integer) data);
+            count++;
             return getMedian(arr);
         }
 
         private int getMedian(ArrayList<Integer> test) {
-            ArrayList<Integer> arrSorted = new ArrayList<Integer>();
-            for(int i =0; i<test.size(); i++){
-                arrSorted.add(test.get(i));
 
-            }
+            Collections.sort(test);
 
-            Collections.sort(arrSorted);
-
-            int pointA = arrSorted.size()/2;
-            if(arrSorted.size()%2==0){
-                int pointB = pointA-1;
-                return (arrSorted.get(pointA)+arrSorted.get(pointB))/2;
+            int pointA = count / 2;
+            if (count % 2 == 0) {
+                int pointB = pointA - 1;
+                return (test.get(pointA) + test.get(pointB)) / 2;
             }
 
 
-            return arrSorted.get(pointA);
+            return test.get(pointA);
         }
 
         public Object processRemove(Object data) {
-            arr.remove(0);
+            arr.remove(data);
+            count--;
             return 0.0;
         }
 
 
         public Object reset() {
             arr = new ArrayList<Integer>();
+            count = 0;
             return 0.0;
         }
 
@@ -301,51 +279,5 @@ public class MedianAggregator extends  AttributeAggregator{
 
 }
 
-
- class MedianAggregator1 extends  AttributeAggregator{
-    protected void init(ExpressionExecutor[] expressionExecutors, ConfigReader configReader, ExecutionPlanContext executionPlanContext) {
-
-    }
-
-    public Attribute.Type getReturnType() {
-        return null;
-    }
-
-    public Object processAdd(Object o) {
-        return null;
-    }
-
-    public Object processAdd(Object[] objects) {
-        return null;
-    }
-
-    public Object processRemove(Object o) {
-        return null;
-    }
-
-    public Object processRemove(Object[] objects) {
-        return null;
-    }
-
-    public Object reset() {
-        return null;
-    }
-
-    public void start() {
-
-    }
-
-    public void stop() {
-
-    }
-
-    public Map<String, Object> currentState() {
-        return null;
-    }
-
-    public void restoreState(Map<String, Object> map) {
-
-    }
-}
 
 

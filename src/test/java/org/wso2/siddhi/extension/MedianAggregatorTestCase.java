@@ -36,10 +36,13 @@ public class MedianAggregatorTestCase {
         SiddhiManager siddhiManager = new SiddhiManager();
 
 
-        String inStreamDefinition = "define stream inputStream (tt double); define stream outputStream (tt double);";
+        String inStreamDefinition = "define stream inputStream (tt double); " +
+                "define stream outputStream (tt double);";
 
-        String query = "@info(name = 'query1') " + "from inputStream#window.length(5) " + "select median:median(tt) as tt insert into filteredOutputStream";
-        ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inStreamDefinition + query);
+        String query = "@info(name = 'query1') " + "from inputStream#window.length(5) " +
+                "select stat:median(tt) as tt insert into filteredOutputStream";
+        ExecutionPlanRuntime executionPlanRuntime = siddhiManager.
+                createExecutionPlanRuntime(inStreamDefinition + query);
 
         executionPlanRuntime.addCallback("filteredOutputStream", new StreamCallback() {
             @Override
@@ -111,11 +114,13 @@ public class MedianAggregatorTestCase {
         SiddhiManager siddhiManager = new SiddhiManager();
 
 
-        String inStreamDefinition = "define stream inputStream (tt double); define stream outputStream (tt double);";
+        String inStreamDefinition = "define stream inputStream (tt double); " +
+                "define stream outputStream (tt double);";
 
         String query = "@info(name = 'query1') " + "from inputStream#window.lengthBatch(5) " +
-                "select median:median(tt) as tt insert into filteredOutputStream";
-        ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inStreamDefinition + query);
+                "select stat:median(tt) as tt insert into filteredOutputStream";
+        ExecutionPlanRuntime executionPlanRuntime = siddhiManager.
+                createExecutionPlanRuntime(inStreamDefinition + query);
 
         executionPlanRuntime.addCallback("filteredOutputStream", new StreamCallback() {
             @Override
@@ -131,11 +136,7 @@ public class MedianAggregatorTestCase {
                         case 2:
                             Assert.assertEquals(9.17144, ev.getData(0));
                             break;
-
-
                     }
-
-
                 }
             }
         });
@@ -153,7 +154,6 @@ public class MedianAggregatorTestCase {
         inputHandler.send(new Object[]{8.19278});
         inputHandler.send(new Object[]{7.49374});
 
-
         executionPlanRuntime.shutdown();
     }
 
@@ -164,17 +164,18 @@ public class MedianAggregatorTestCase {
         SiddhiManager siddhiManager = new SiddhiManager();
 
 
-        String inStreamDefinition = "define stream inputStream (tt int); define stream outputStream (tt double);";
+        String inStreamDefinition = "define stream inputStream (tt int); " +
+                "define stream outputStream (tt double);";
 
         String query = "@info(name = 'query1') " + "from inputStream#window.lengthBatch(5) " +
-                "select median:median(tt) as tt insert into filteredOutputStream";
-        ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inStreamDefinition + query);
+                "select stat:median(tt) as tt insert into filteredOutputStream";
+        ExecutionPlanRuntime executionPlanRuntime = siddhiManager.
+                createExecutionPlanRuntime(inStreamDefinition + query);
 
         executionPlanRuntime.addCallback("filteredOutputStream", new StreamCallback() {
             @Override
             public void receive(org.wso2.siddhi.core.event.Event[] events) {
 
-                // EventPrinter.print(events);
                 for (Event ev : events) {
                     count++;
                     switch (count) {
@@ -184,11 +185,7 @@ public class MedianAggregatorTestCase {
                         case 2:
                             Assert.assertEquals(8.0, ev.getData(0));
                             break;
-
-
                     }
-
-
                 }
             }
         });
@@ -217,17 +214,18 @@ public class MedianAggregatorTestCase {
         SiddhiManager siddhiManager = new SiddhiManager();
 
 
-        String inStreamDefinition = "define stream inputStream (tt int); define stream outputStream (tt double);";
+        String inStreamDefinition = "define stream inputStream (tt int); " +
+                "define stream outputStream (tt double);";
 
         String query = "@info(name = 'query1') " + "from inputStream#window.length(5) " +
-                "select median:median(tt) as tt insert into filteredOutputStream";
-        ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inStreamDefinition + query);
+                "select stat:median(tt) as tt insert into filteredOutputStream";
+        ExecutionPlanRuntime executionPlanRuntime = siddhiManager.
+                createExecutionPlanRuntime(inStreamDefinition + query);
 
         executionPlanRuntime.addCallback("filteredOutputStream", new StreamCallback() {
             @Override
             public void receive(org.wso2.siddhi.core.event.Event[] events) {
 
-                // EventPrinter.print(events);
                 for (Event ev : events) {
                     count++;
                     switch (count) {
@@ -262,9 +260,7 @@ public class MedianAggregatorTestCase {
                             Assert.assertEquals(8.0, ev.getData(0));
                             break;
 
-
                     }
-
 
                 }
             }

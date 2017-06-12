@@ -15,7 +15,6 @@
 */
 package org.wso2.siddhi.extension.median;
 
-import org.apache.log4j.Logger;
 import org.wso2.siddhi.annotation.Example;
 import org.wso2.siddhi.annotation.Extension;
 import org.wso2.siddhi.annotation.Parameter;
@@ -39,40 +38,38 @@ import java.util.Map;
         description = "TBD",
         parameters = {
                 @Parameter(name = "data",
-                        description = "The batch time period for which the window should hold events.",
-                        type = {DataType.INT, DataType.LONG, DataType.DOUBLE}),
+                        description = "TBD",
+                        type = {DataType.INT, DataType.LONG, DataType.DOUBLE})
 
         },
         returnAttributes = @ReturnAttribute(
                 description = "Returns median of aggregated events",
-                type = {DataType.INT, DataType.LONG, DataType.DOUBLE}),
+                type = {DataType.DOUBLE}),
         examples = @Example(description = "TBD", syntax = "TBD")
 )
 public class MedianAggregator extends AttributeAggregator {
-    private MedianAggregator medianAgg;
-    Logger log = Logger.getLogger(MedianAggregator.class);
+    private MedianAggregator medianAggregator;
     private int count = 0;
 
 
     protected void init(ExpressionExecutor[] expressionExecutors, ConfigReader configReader, ExecutionPlanContext executionPlanContext) {
-        //(ExpressionExecutor[] attributeExpressionExecutors, ExecutionPlanContext executionPlanContext) {
         if (expressionExecutors.length != 1) {
             throw new OperationNotSupportedException("Median aggregator has to have exactly 1 parameter, currently " +
-                    expressionExecutors.length + " parameters provided");
+                    expressionExecutors.length + " parameters are provided");
         }
 
         Attribute.Type type = expressionExecutors[0].getReturnType();
 
         switch (type) {
-
+            // TODO: 6/12/17  add long
             case DOUBLE:
-                medianAgg = new MedianAggregatorDouble();
+                medianAggregator = new MedianAggregatorDouble();
                 break;
             case INT:
-                medianAgg = new MedianAggregatorInt();
+                medianAggregator = new MedianAggregatorInt();
                 break;
             case FLOAT:
-                medianAgg = new MedianAggregatorFloat();
+                medianAggregator = new MedianAggregatorFloat();
             default:
                 throw new OperationNotSupportedException("Median not supported for " + type);
         }
@@ -80,11 +77,11 @@ public class MedianAggregator extends AttributeAggregator {
 
 
     public Attribute.Type getReturnType() {
-        return medianAgg.getReturnType();
-    }
+        return Attribute.Type.DOUBLE;
+    } // TODO: 6/12/17 double 
 
     public Object processAdd(Object data) {
-        return medianAgg.processAdd(data);
+        return medianAggregator.processAdd(data);
     }
 
 
@@ -94,7 +91,7 @@ public class MedianAggregator extends AttributeAggregator {
 
 
     public Object processRemove(Object data) {
-        return medianAgg.processRemove(data);
+        return medianAggregator.processRemove(data);
     }
 
 
@@ -104,7 +101,7 @@ public class MedianAggregator extends AttributeAggregator {
 
 
     public Object reset() {
-        return medianAgg.reset();
+        return medianAggregator.reset();
     }
 
 
@@ -187,26 +184,26 @@ public class MedianAggregator extends AttributeAggregator {
         public Object processAdd(Object data) {
             arr.add((Float) data);
             count++;
-            return getMedian(arr);
+            return getMedian();
         }
 
-        private float getMedian(ArrayList<Float> test) {
-            Collections.sort(test);
+        private double getMedian() {
+            Collections.sort(arr);
 
             int pointA = count / 2;
             if (count % 2 == 0) {
                 int pointB = pointA - 1;
-                return (test.get(pointA) + test.get(pointB)) / 2;
+                return (arr.get(pointA) + arr.get(pointB)) / 2.0;
             }
 
 
-            return test.get(pointA);
+            return arr.get(pointA);
         }
 
         public Object processRemove(Object data) {
             arr.remove(data);
             count--;
-            return 0.0;
+            return getMedian();
         }
 
 
@@ -226,43 +223,43 @@ public class MedianAggregator extends AttributeAggregator {
     }
 
     private class MedianAggregatorInt extends MedianAggregator {
-        private final Attribute.Type type = Attribute.Type.INT;
-        private ArrayList<Integer> arr = new ArrayList<Integer>();
+//        private final Attribute.Type type = Attribute.Type.INT;
+        private ArrayList<Integer> arrayList = new ArrayList<Integer>();
 
 
-        public Attribute.Type getReturnType() {
-            return type;
-        }
+//        public Attribute.Type getReturnType() {
+//            return type;
+//        }
 
         public Object processAdd(Object data) {
-            arr.add((Integer) data);
+            arrayList.add((Integer) data);
             count++;
-            return getMedian(arr);
+            return getMedian();
         }
 
-        private int getMedian(ArrayList<Integer> test) {
+        private double getMedian() {
 
-            Collections.sort(test);
+            Collections.sort(arrayList);
 
             int pointA = count / 2;
             if (count % 2 == 0) {
                 int pointB = pointA - 1;
-                return (test.get(pointA) + test.get(pointB)) / 2;
+                return (arrayList.get(pointA) + arrayList.get(pointB)) / 2.0;
             }
 
 
-            return test.get(pointA);
+            return arrayList.get(pointA);
         }
 
         public Object processRemove(Object data) {
-            arr.remove(data);
+            arrayList.remove(data);
             count--;
-            return 0.0;
+            return getMedian();
         }
 
 
         public Object reset() {
-            arr = new ArrayList<Integer>();
+            arrayList = new ArrayList<Integer>();
             count = 0;
             return 0.0;
         }

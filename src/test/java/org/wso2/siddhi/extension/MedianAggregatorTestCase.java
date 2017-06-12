@@ -113,7 +113,8 @@ public class MedianAggregatorTestCase {
 
         String inStreamDefinition = "define stream inputStream (tt double); define stream outputStream (tt double);";
 
-        String query = "@info(name = 'query1') " + "from inputStream#window.lengthBatch(5) " + "select median:median(tt) as tt insert into filteredOutputStream";
+        String query = "@info(name = 'query1') " + "from inputStream#window.lengthBatch(5) " +
+                "select median:median(tt) as tt insert into filteredOutputStream";
         ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inStreamDefinition + query);
 
         executionPlanRuntime.addCallback("filteredOutputStream", new StreamCallback() {
@@ -163,9 +164,10 @@ public class MedianAggregatorTestCase {
         SiddhiManager siddhiManager = new SiddhiManager();
 
 
-        String inStreamDefinition = "define stream inputStream (tt int); define stream outputStream (tt int);";
+        String inStreamDefinition = "define stream inputStream (tt int); define stream outputStream (tt double);";
 
-        String query = "@info(name = 'query1') " + "from inputStream#window.lengthBatch(5) " + "select median:median(tt) as tt insert into filteredOutputStream";
+        String query = "@info(name = 'query1') " + "from inputStream#window.lengthBatch(5) " +
+                "select median:median(tt) as tt insert into filteredOutputStream";
         ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inStreamDefinition + query);
 
         executionPlanRuntime.addCallback("filteredOutputStream", new StreamCallback() {
@@ -177,10 +179,10 @@ public class MedianAggregatorTestCase {
                     count++;
                     switch (count) {
                         case 1:
-                            Assert.assertEquals(3, ev.getData()[0]);
+                            Assert.assertEquals(3.0, ev.getData()[0]);
                             break;
                         case 2:
-                            Assert.assertEquals(8, ev.getData(0));
+                            Assert.assertEquals(8.0, ev.getData(0));
                             break;
 
 
@@ -215,9 +217,10 @@ public class MedianAggregatorTestCase {
         SiddhiManager siddhiManager = new SiddhiManager();
 
 
-        String inStreamDefinition = "define stream inputStream (tt int); define stream outputStream (tt int);";
+        String inStreamDefinition = "define stream inputStream (tt int); define stream outputStream (tt double);";
 
-        String query = "@info(name = 'query1') " + "from inputStream#window.length(5) " + "select median:median(tt) as tt insert into filteredOutputStream";
+        String query = "@info(name = 'query1') " + "from inputStream#window.length(5) " +
+                "select median:median(tt) as tt insert into filteredOutputStream";
         ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inStreamDefinition + query);
 
         executionPlanRuntime.addCallback("filteredOutputStream", new StreamCallback() {
@@ -229,34 +232,34 @@ public class MedianAggregatorTestCase {
                     count++;
                     switch (count) {
                         case 1:
-                            Assert.assertEquals(1, ev.getData()[0]);
+                            Assert.assertEquals(1.0, ev.getData(0));
                             break;
                         case 2:
-                            Assert.assertEquals(1, ev.getData(0));
+                            Assert.assertEquals(1.5, ev.getData(0));
                             break;
                         case 3:
-                            Assert.assertEquals(2, ev.getData()[0]);
+                            Assert.assertEquals(2.0, ev.getData(0));
                             break;
                         case 4:
-                            Assert.assertEquals(2, ev.getData(0));
+                            Assert.assertEquals(2.5, ev.getData(0));
                             break;
                         case 5:
-                            Assert.assertEquals(3, ev.getData()[0]);
+                            Assert.assertEquals(3.0, ev.getData(0));
                             break;
                         case 6:
-                            Assert.assertEquals(4, ev.getData(0));
+                            Assert.assertEquals(4.0, ev.getData(0));
                             break;
                         case 7:
-                            Assert.assertEquals(5, ev.getData()[0]);
+                            Assert.assertEquals(5.0, ev.getData(0));
                             break;
                         case 8:
-                            Assert.assertEquals(6, ev.getData(0));
+                            Assert.assertEquals(6.0, ev.getData(0));
                             break;
                         case 9:
-                            Assert.assertEquals(8, ev.getData()[0]);
+                            Assert.assertEquals(8.0, ev.getData(0));
                             break;
                         case 10:
-                            Assert.assertEquals(8, ev.getData(0));
+                            Assert.assertEquals(8.0, ev.getData(0));
                             break;
 
 
